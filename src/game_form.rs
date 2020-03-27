@@ -17,4 +17,8 @@ pub trait Game {
     fn players_allowed(&self) -> u32;
 
     fn player_turn(&self) -> u32;
+
+    fn display_turn(&self, turn : &Self::TurnAction) -> String;
+
+    fn display_state(&self, state : &Self::State) -> String;
 }
