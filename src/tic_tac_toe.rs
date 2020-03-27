@@ -1,31 +1,35 @@
 
 use crate::game_form::{Game, GameResult};
 
-struct TicTacToeGame {
+pub fn get_game() -> TicTacToeGame {
+    TicTacToeGame {}
+}
+
+pub struct TicTacToeGame {
 
 }
 
 #[derive(Clone, Copy)]
-enum Square {
+pub enum Square {
     X,
     O,
     Empty,
 }
 
 #[derive(Clone)]
-struct TicTacToeState {
+pub struct TicTacToeState {
     board : Vec<Vec<Square>>,
     player_turn : u32,
 }
 
-struct TicTacToeTurn {
+pub struct TicTacToeTurn {
     row : usize,
     col : usize,
     square : Square,
     player_turn : u32,
 }
 
-struct Turns {
+pub struct Turns {
     s0 : TicTacToeState,
     row : usize,
     col : usize,
@@ -105,7 +109,7 @@ impl Game for TicTacToeGame {
                 Square::Empty => ' ',
             }
         }
-        format!( "Player {}: Row = {}; Col = {}; Symbol = {}", turn.player_turn, turn.row, turn.col, p(turn.square) )
+        format!( "Player {}: Row = {}; Col = {}; Symbol = {}\n", turn.player_turn, turn.row, turn.col, p(turn.square) )
     }
 
     fn display_state(&self, state : &TicTacToeState) -> String {
@@ -118,9 +122,9 @@ impl Game for TicTacToeGame {
         }
         let mut dis = vec![];
         for r in 0..3 {
-            dis.push(format!("{} | {} | {}", p(state.board[r][0]), p(state.board[r][1]), p(state.board[r][2])));
-            if r != 3 {
-                    dis.push("------------".to_string());
+            dis.push(format!(" {} | {} | {}\n", p(state.board[r][0]), p(state.board[r][1]), p(state.board[r][2])));
+            if r != 2 {
+                    dis.push("-----------\n".to_string());
             }
         }
         dis.push("".to_string());

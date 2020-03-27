@@ -2,15 +2,12 @@
 mod game_form;
 mod tic_tac_toe;
 use game_form::{Game};
+use tic_tac_toe::*;
 
-fn z<G:Game>( g : G ) {
-    let s1 = g.initial_state();
-    let turns = g.legal_turns(&s1);
-
-    let x : Vec<G::State> = turns.map( |turn| g.take_turn(&s1, turn)).collect();
-}
 
 fn main() {
-    
-    println!("Hello, world!");
+    let ttt = get_game();
+    let s0 = ttt.initial_state();
+
+    println!("{}", ttt.display_state(&s0)); 
 }
