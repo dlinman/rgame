@@ -17,7 +17,7 @@ pub trait Game {
 
     fn legal_turns(&self, state : &Self::State) -> Self::T;
 
-    fn state_score(&self, state : &Self::State ) -> i32;
+    fn state_score(&self, state : &Self::State) -> i32;
 
     fn players_allowed(&self) -> u32;
 
