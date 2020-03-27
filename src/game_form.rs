@@ -17,7 +17,7 @@ pub trait Game {
 
     fn legal_turns(&self, state : &Self::State) -> Self::T;
 
-    fn state_score(&self, state : &Self::State) -> i32;
+    fn state_score(&self, state : &Self::State, evaluator : &dyn Evaluator<Self::State>) -> i32;
 
     fn players_allowed(&self) -> u32;
 
@@ -30,3 +30,6 @@ pub trait Game {
     fn game_status(&self, state : &Self::State) -> GameResult;
 }
 
+pub trait Evaluator<State> {
+    fn eval(&self, state : &State) -> i32;
+}

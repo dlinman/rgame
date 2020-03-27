@@ -1,5 +1,5 @@
 
-use crate::game_form::{Game, GameResult};
+use crate::game_form::{Game, GameResult, Evaluator};
 
 pub fn get_game() -> TicTacToeGame {
     TicTacToeGame {}
@@ -93,7 +93,7 @@ impl Game for TicTacToeGame {
         Turns { s0: state.clone(), row: 0, col: 0 }
     }
 
-    fn state_score(&self, state : &TicTacToeState) -> i32 {
+    fn state_score(&self, state : &TicTacToeState, evaluator : &dyn Evaluator<TicTacToeState>) -> i32 {
         0
     }
 

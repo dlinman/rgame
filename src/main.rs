@@ -3,8 +3,8 @@ extern crate rand;
 
 mod game_form;
 mod tic_tac_toe;
+mod player;
 
-use rand::Rng;
 use rand::prelude::*;
 use game_form::{Game, GameResult};
 use tic_tac_toe::*;
@@ -27,8 +27,8 @@ fn main() {
 
     match ttt.game_status(&s) {
         GameResult::NotFinished => panic!("Game not finished"),
-        GameResult::Winner{ player, scores } => println!("winner is player {}", player),
-        GameResult::Draw{ scores } => println!("draw"),
+        GameResult::Winner{ player, scores: _ } => println!("winner is player {}", player),
+        GameResult::Draw{ scores: _ } => println!("draw"),
     }
 
 }
