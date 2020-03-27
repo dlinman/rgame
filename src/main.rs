@@ -10,4 +10,9 @@ fn main() {
     let s0 = ttt.initial_state();
 
     println!("{}", ttt.display_state(&s0)); 
+
+    let turns = ttt.legal_turns(&s0);
+    for turn in turns {
+        println!("{}", ttt.display_turn(&turn));
+    }
 }

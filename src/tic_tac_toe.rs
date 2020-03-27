@@ -40,16 +40,16 @@ impl Iterator for Turns {
 
     fn next(&mut self) -> Option<TicTacToeTurn> {
         loop {
-            if self.col == 3 {
-                return None;
-            }
             if self.row == 3 {
                 self.row = 0;
+                self.col = self.col + 1;
+            }
+            if self.col == 3 {
+                return None;
             }
             if matches!(self.s0.board[self.row][self.col], Square::Empty) {
                 break;
             }
-            self.col = self.col + 1;
             self.row = self.row + 1;
         }
 
@@ -60,7 +60,9 @@ impl Iterator for Turns {
             Square::O
         };
 
-        Some(TicTacToeTurn{row: self.row, col: self.col, square, player_turn: self.s0.player_turn})
+        let ret = TicTacToeTurn{row: self.row, col: self.col, square, player_turn: self.s0.player_turn};
+        self.row = self.row + 1;
+        Some(ret)
     }
 }
 
