@@ -82,7 +82,7 @@ impl Game for TicTacToeGame {
         TicTacToeState { board, player_turn: 0 }
     }
 
-    fn take_turn(&self, state : &TicTacToeState, turn_action : TicTacToeTurn) -> TicTacToeState {
+    fn take_turn(&self, state : &TicTacToeState, turn_action : &TicTacToeTurn) -> TicTacToeState {
         let mut new_state = state.clone();
         new_state.board[turn_action.row][turn_action.col] = turn_action.square;
         new_state.player_turn = (state.player_turn + 1) % 2;

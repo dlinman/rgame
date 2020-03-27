@@ -1,18 +1,34 @@
 
+extern crate rand;
+
 mod game_form;
 mod tic_tac_toe;
-use game_form::{Game};
+
+use rand::Rng;
+use rand::prelude::*;
+use game_form::{Game, GameResult};
 use tic_tac_toe::*;
 
 
 fn main() {
+    let mut rng = rand::thread_rng();
     let ttt = get_game();
-    let s0 = ttt.initial_state();
+    let mut s = ttt.initial_state();
 
-    println!("{}", ttt.display_state(&s0)); 
+    while matches!(ttt.game_status(&s), GameResult::NotFinished) {
+        let mut turns = ttt.legal_turns(&s).collect::<Vec<_>>();
+        turns.shuffle(&mut rng);
 
-    let turns = ttt.legal_turns(&s0);
-    for turn in turns {
-        println!("{}", ttt.display_turn(&turn));
+        s = ttt.take_turn(&s, &turns[0]);
+
+        println!("{}", ttt.display_turn(&turns[0]));
+        println!("{}", ttt.display_state(&s));
     }
+
+    match ttt.game_status(&s) {
+        GameResult::NotFinished => panic!("Game not finished"),
+        GameResult::Winner{ player, scores } => println!("winner is player {}", player),
+        GameResult::Draw{ scores } => println!("draw"),
+    }
+
 }

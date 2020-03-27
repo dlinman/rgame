@@ -13,7 +13,7 @@ pub trait Game {
 
     fn initial_state(&self) -> Self::State;
 
-    fn take_turn(&self, state : &Self::State, turn_action : Self::TurnAction) -> Self::State;
+    fn take_turn(&self, state : &Self::State, turn_action : &Self::TurnAction) -> Self::State;
 
     fn legal_turns(&self, state : &Self::State) -> Self::T;
 
