@@ -129,6 +129,58 @@ impl Game for TicTacToeGame {
     }
 
     fn game_status(&self, state : &Self::State) -> GameResult {
-        GameResult::NotFinished
+        use Square::*;
+        use crate::game_form::GameResult::*;
+        fn won(line : &[Square]) -> Option<GameResult> {
+            match line {
+                [X, X, X] => Some( Winner { player: 0, scores: vec![] } ),
+                [O, O, O] => Some( Winner { player: 1, scores: vec![] } ),
+                _ => None,
+            }
+        }
+
+        for r in 0..3 {
+            let result = won(&state.board[r][..]); 
+            if matches!(result, Some(_)) {
+                return result.unwrap();
+            }
+        }
+
+        let c0 = vec![ state.board[0][0], state.board[1][0], state.board[2][0] ];
+        let result_c0 = won(&c0); 
+        if matches!(result_c0, Some(_)) {
+            return result_c0.unwrap();
+        }
+
+        let c1 = vec![ state.board[0][1], state.board[1][1], state.board[2][1] ];
+        let result_c1 = won(&c1); 
+        if matches!(result_c1, Some(_)) {
+            return result_c1.unwrap();
+        }
+
+        let c2 = vec![ state.board[0][2], state.board[1][2], state.board[2][2] ];
+        let result_c2 = won(&c2); 
+        if matches!(result_c2, Some(_)) {
+            return result_c2.unwrap();
+        }
+
+        let d0 = vec![ state.board[0][0], state.board[1][1], state.board[2][2] ];
+        let result_d0 = won(&d0); 
+        if matches!(result_d0, Some(_)) {
+            return result_d0.unwrap();
+        }
+
+        let d1 = vec![ state.board[2][0], state.board[1][1], state.board[0][2] ];
+        let result_d1 = won(&d1); 
+        if matches!(result_d1, Some(_)) {
+            return result_d1.unwrap();
+        }
+
+        if state.board.iter().map(|row| row.iter()).flatten().filter(|s| matches!(s, Square::Empty)).count() == 0 {
+            GameResult::Draw { scores: vec![] }
+        } 
+        else {
+            GameResult::NotFinished
+        }
     }
 }
