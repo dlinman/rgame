@@ -1,5 +1,6 @@
 
 mod game_form;
+mod tic_tac_toe;
 use game_form::{Game};
 
 fn z<G:Game>( g : G ) {
