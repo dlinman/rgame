@@ -1,35 +1,35 @@
 
 use crate::game_form::{Game, GameResult, Evaluator};
 
-pub fn get_game() -> TicTacToeGame {
+pub fn get_game() -> impl Game {
     TicTacToeGame {}
 }
 
-pub struct TicTacToeGame {
+struct TicTacToeGame {
 
 }
 
 #[derive(Clone, Copy)]
-pub enum Square {
+enum Square {
     X,
     O,
     Empty,
 }
 
 #[derive(Clone)]
-pub struct TicTacToeState {
+struct TicTacToeState {
     board : Vec<Vec<Square>>,
     player_turn : u32,
 }
 
-pub struct TicTacToeTurn {
+struct TicTacToeTurn {
     row : usize,
     col : usize,
     square : Square,
     player_turn : u32,
 }
 
-pub struct Turns {
+struct Turns {
     s0 : TicTacToeState,
     row : usize,
     col : usize,
