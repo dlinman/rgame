@@ -12,6 +12,10 @@ use tic_tac_toe::*;
 
 
 fn main() {
+    play_tic_tac_toe();
+}
+
+fn play_tic_tac_toe() {
     let ttt = get_game();
     let mut s = ttt.initial_state();
     let mut p1 = strict_random_agent::get_agent();
@@ -34,5 +38,4 @@ fn main() {
         GameResult::Winner{ player, scores: _ } => println!("winner is player {}", player),
         GameResult::Draw{ scores: _ } => println!("draw"),
     }
-
 }
