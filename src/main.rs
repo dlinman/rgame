@@ -3,10 +3,10 @@ extern crate rand;
 
 mod game_form;
 mod tic_tac_toe;
-mod player;
-mod strict_random_player;
+mod agents;
 
-use player::{Player};
+use agents::agent::{Agent};
+use agents::strict_random_agent;
 use game_form::{Game, GameResult};
 use tic_tac_toe::*;
 
@@ -14,8 +14,8 @@ use tic_tac_toe::*;
 fn main() {
     let ttt = get_game();
     let mut s = ttt.initial_state();
-    let mut p1 = strict_random_player::get_player();
-    let mut p2 = strict_random_player::get_player();
+    let mut p1 = strict_random_agent::get_agent();
+    let mut p2 = strict_random_agent::get_agent();
 
     while matches!(ttt.game_status(&s), GameResult::NotFinished) {
         let turn = match ttt.player_turn(&s) {
