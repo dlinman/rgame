@@ -1,17 +1,11 @@
 
-use crate::game_form::{Game, GameResult, Evaluator};
+use crate::game_form::{Game, GameResult};
 
 pub fn get_game() -> impl Game {
     TicTacToeGame {}
 }
 
-pub fn get_standard_eval(player : u32) -> impl Evaluator<TicTacToeState> {
-    StandardEval { player }
-}
-
-struct TicTacToeGame {
-
-}
+struct TicTacToeGame { }
 
 #[derive(Clone, Copy)]
 enum Square {
@@ -97,8 +91,17 @@ impl Game for TicTacToeGame {
         Turns { s0: state.clone(), row: 0, col: 0 }
     }
 
-    fn state_score(&self, state : &TicTacToeState, evaluator : &dyn Evaluator<TicTacToeState>) -> i32 {
-        evaluator.eval(&state)
+    fn state_score(&self, state : &TicTacToeState, player : u32) -> i32 {
+        use crate::game_form::GameResult::*;
+        let stat = self.game_status(&state);
+        match stat {
+            Winner { player: p, scores: _ } if p == player => return 100,
+            Winner { player: _, scores: _ } => return 90,
+            Draw { scores: _ } => return 80,
+            _ => (),
+        }
+        // TODO score other configurations
+        0
     }
 
     fn players_allowed(&self) -> u32 { 2 }
@@ -193,25 +196,5 @@ impl Game for TicTacToeGame {
         else {
             GameResult::NotFinished
         }
-    }
-}
-
-struct StandardEval {
-    player : u32
-}
-
-impl Evaluator<TicTacToeState> for StandardEval {
-    fn eval(&self, state : &TicTacToeState) -> i32 {
-        use crate::game_form::GameResult::*;
-        let game = TicTacToeGame {};
-        let stat = game.game_status(&state);
-        match stat {
-            Winner { player, scores: _ } if player == self.player => return 100,
-            Winner { player: _, scores: _ } => return 90,
-            Draw { scores: _ } => return 80,
-            _ => (),
-        }
-        // TODO score other configurations
-        0
     }
 }
