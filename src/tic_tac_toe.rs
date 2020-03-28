@@ -5,6 +5,10 @@ pub fn get_game() -> impl Game {
     TicTacToeGame {}
 }
 
+pub fn get_standard_eval(player : u32) -> impl Evaluator<TicTacToeState> {
+    StandardEval { player }
+}
+
 struct TicTacToeGame {
 
 }
@@ -17,7 +21,7 @@ enum Square {
 }
 
 #[derive(Clone)]
-struct TicTacToeState {
+pub struct TicTacToeState {
     board : Vec<Vec<Square>>,
     player_turn : u32,
 }
@@ -94,7 +98,7 @@ impl Game for TicTacToeGame {
     }
 
     fn state_score(&self, state : &TicTacToeState, evaluator : &dyn Evaluator<TicTacToeState>) -> i32 {
-        0
+        evaluator.eval(&state)
     }
 
     fn players_allowed(&self) -> u32 { 2 }
@@ -188,5 +192,25 @@ impl Game for TicTacToeGame {
         else {
             GameResult::NotFinished
         }
+    }
+}
+
+struct StandardEval {
+    player : u32
+}
+
+impl Evaluator<TicTacToeState> for StandardEval {
+    fn eval(&self, state : &TicTacToeState) -> i32 {
+        use crate::game_form::GameResult::*;
+        let game = TicTacToeGame {};
+        let stat = game.game_status(&state);
+        match stat {
+            Winner { player, scores: _ } if player == self.player => return 100,
+            Winner { player, scores: _ } => return 90,
+            Draw { scores: _ } => return 80,
+            _ => (),
+        }
+        // TODO score other configurations
+        0
     }
 }
