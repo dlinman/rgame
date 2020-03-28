@@ -127,6 +127,7 @@ impl Game for TicTacToeGame {
             }
         }
         let mut dis = vec![];
+        println!("");
         for r in 0..3 {
             dis.push(format!(" {} | {} | {}\n", p(state.board[r][0]), p(state.board[r][1]), p(state.board[r][2])));
             if r != 2 {
@@ -134,7 +135,7 @@ impl Game for TicTacToeGame {
             }
         }
         dis.push("".to_string());
-        dis.push(format!("Player {}'s turn", state.player_turn));
+        dis.push(format!("Player {}'s turn", (state.player_turn + 1) % 2));
         dis.into_iter().collect::<String>()
     }
 
