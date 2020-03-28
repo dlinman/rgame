@@ -206,7 +206,7 @@ impl Evaluator<TicTacToeState> for StandardEval {
         let stat = game.game_status(&state);
         match stat {
             Winner { player, scores: _ } if player == self.player => return 100,
-            Winner { player, scores: _ } => return 90,
+            Winner { player: _, scores: _ } => return 90,
             Draw { scores: _ } => return 80,
             _ => (),
         }
