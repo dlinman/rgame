@@ -6,7 +6,7 @@ mod tic_tac_toe;
 mod agents;
 
 use agents::agent::{Agent};
-use agents::{strict_random_agent, pick_highest_action_agent};
+use agents::{strict_random_agent, pick_highest_action_agent, self_minimax_agent};
 use game_form::{Game, GameResult};
 use tic_tac_toe::*;
 
@@ -18,7 +18,7 @@ fn main() {
 fn play_tic_tac_toe() {
     let ttt = get_game();
     let mut p1 = strict_random_agent::get_agent();
-    let mut p2 = pick_highest_action_agent::get_agent(1); 
+    let mut p2 = self_minimax_agent::get_agent(1, 2); 
 
     let mut p1_win = 0;
     let mut p2_win = 0;
