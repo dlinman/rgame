@@ -7,7 +7,7 @@ pub fn get_game() -> impl Game {
 
 struct TicTacToeGame { }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 enum Square {
     X,
     O,
@@ -92,16 +92,63 @@ impl Game for TicTacToeGame {
     }
 
     fn state_score(&self, state : &TicTacToeState, player : u32) -> i32 {
-        use crate::game_form::GameResult::*;
-        let stat = self.game_status(&state);
-        match stat {
-            Winner { player: p, scores: _ } if p == player => return 100,
-            Winner { player: _, scores: _ } => return 90,
-            Draw { scores: _ } => return 80,
-            _ => (),
+        fn score(line : Vec<Square>, s : Square) -> i32 {
+            let mut home_count = 0;
+            let mut empty_count = 0;
+            let mut enemy_count = 0;
+            for i in 0..3 {
+                if Square::Empty == line[i] {
+                    empty_count = empty_count + 1;
+                }
+                else if s == line[i] {
+                    home_count = home_count + 1;
+                }
+                else { 
+                    enemy_count = enemy_count + 1;
+                }
+            }
+
+            match (home_count, empty_count, enemy_count) {
+                // X X X
+                (3, _, _) => 10000,
+                // O O X
+                (1, _, 2) => 1000,
+                // X X E
+                (2, 1, _) => 100,
+                // O X E
+                (1, 1, 1) => 10,
+                // X E E
+                (1, 2, _) => 1,
+                _ => 0,
+            }
         }
-        // TODO score other configurations
-        0
+
+        let square = if player == 0 {
+            Square::X
+        }
+        else {
+            Square::O
+        };
+
+        let r0 = vec![state.board[0][1], state.board[0][1], state.board[0][2]];
+        let r1 = vec![state.board[1][1], state.board[1][1], state.board[1][2]];
+        let r2 = vec![state.board[2][1], state.board[2][1], state.board[2][2]];
+
+        let c0 = vec![state.board[0][0], state.board[1][0], state.board[2][0]];
+        let c1 = vec![state.board[0][1], state.board[1][1], state.board[2][1]];
+        let c2 = vec![state.board[0][2], state.board[1][2], state.board[2][2]];
+
+        let d0 = vec![state.board[0][0], state.board[1][1], state.board[2][2]];
+        let d1 = vec![state.board[2][0], state.board[1][1], state.board[0][2]];
+
+        score( r0, square ) 
+        + score( r1, square )
+        + score( r2, square )
+        + score( c0, square )
+        + score( c1, square )
+        + score( c2, square )
+        + score( d0, square )
+        + score( d1, square )
     }
 
     fn players_allowed(&self) -> u32 { 2 }
