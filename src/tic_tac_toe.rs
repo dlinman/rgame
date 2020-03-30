@@ -15,7 +15,7 @@ enum Square {
 }
 
 #[derive(Clone)]
-pub struct TicTacToeState {
+struct TicTacToeState {
     board : Vec<Vec<Square>>,
     player_turn : u32,
 }
