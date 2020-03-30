@@ -7,7 +7,7 @@ mod agents;
 mod two_player_contest;
 
 use agents::agent::{Agent};
-use agents::{strict_random_agent, pick_highest_action_agent, self_minimax_agent};
+use agents::{strict_random_agent, pick_highest_action_agent, self_minimax_agent, human_player};
 use game_form::{Game, GameResult};
 use tic_tac_toe::*;
 
