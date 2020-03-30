@@ -17,7 +17,7 @@ fn main() {
 
 fn play_tic_tac_toe() {
     let ttt = get_game();
-    let mut p1 = strict_random_agent::get_agent();
+    let mut p1 = pick_highest_action_agent::get_agent(0);
     let mut p2 = self_minimax_agent::get_agent(1, 2); 
 
     let mut p1_win = 0;

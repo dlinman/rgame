@@ -21,14 +21,14 @@ impl Agent for SelfMinimaxAgent {
                 return game.state_score(state, player);
             }
             if max {
-                let mut value = -1000000;
+                let mut value = std::i32::MIN;
                 for new_state in game.legal_turns(&state).map(|turn| game.take_turn(&state, &turn)) {
                     value = cmp::max(value, minimax(game, &new_state, player, depth - 1, false));
                 }
                 return value;
             } 
             else {
-                let mut value = 1000000;
+                let mut value = std::i32::MAX;
                 for new_state in game.legal_turns(&state).map(|turn| game.take_turn(&state, &turn)) {
                     value = cmp::min(value, minimax(game, &new_state, player, depth - 1, true));
                 }
@@ -38,10 +38,10 @@ impl Agent for SelfMinimaxAgent {
         let highest_action = game.legal_turns(&state)
                           .map(|turn| { 
                                 let new_state = game.take_turn(&state, &turn);
-                                let score = minimax(game, &new_state, self.player, self.depth, true);
+                                let score = minimax(game, &new_state, self.player, self.depth, false);
                                 (score, Some(turn))
                           })
-                          .fold((-1, None), |highest, n| {
+                          .fold((std::i32::MIN, None), |highest, n| {
                               let (cur_v, cur_t) = highest;
                               let (n_v, n_t) = n;
                               if cur_v > n_v {
