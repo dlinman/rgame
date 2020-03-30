@@ -19,6 +19,11 @@ pub trait Game {
 
     fn state_score(&self, state : &Self::State, player : u32) -> i32;
 
+    fn turn_score(&self, state : &Self::State, turn : &Self::TurnAction, player : u32) -> i32 {
+        let new_state = self.take_turn(state, turn);
+        self.state_score(&new_state, player)
+    }
+
     fn players_allowed(&self) -> u32;
 
     fn player_turn(&self, state : &Self::State) -> u32;
