@@ -174,7 +174,7 @@ impl Game for TicTacToeGame {
                 Square::Empty => ' ',
             }
         }
-        format!( "Player {}: Row = {}; Col = {}; Symbol = {}\n", turn.player_turn, turn.row, turn.col, p(turn.square) )
+        format!( "Player {}: Row = {}; Col = {}; Symbol = {}\n", turn.player_turn + 1, turn.row, turn.col, p(turn.square) )
     }
 
     fn display_state(&self, state : &TicTacToeState) -> String {
@@ -194,7 +194,6 @@ impl Game for TicTacToeGame {
             }
         }
         dis.push("".to_string());
-        dis.push(format!("Player {}'s turn", (state.player_turn + 1) % 2));
         dis.into_iter().collect::<String>()
     }
 
