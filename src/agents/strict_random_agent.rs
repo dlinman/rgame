@@ -1,6 +1,6 @@
 
 use rand::prelude::*;
-use crate::game_form::{Game};
+use crate::games::game_form::{Game};
 use super::agent::Agent; 
 
 pub fn get_agent() -> impl Agent {

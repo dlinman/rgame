@@ -1,7 +1,7 @@
 
 
 use crate::agents::agent::{Agent};
-use crate::game_form::{Game, GameResult};
+use crate::games::game_form::{Game, GameResult};
 
 pub fn contest<G : Game, P1 : Agent, P2 : Agent>( game : &G, player_1 : &mut P1, player_2 : &mut P2, game_count : u32 ) {
 

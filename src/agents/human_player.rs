@@ -1,5 +1,5 @@
 
-use crate::game_form::{Game};
+use crate::games::game_form::{Game};
 use super::agent::Agent; 
 
 use std::io::{self, BufRead};

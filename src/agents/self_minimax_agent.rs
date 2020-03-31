@@ -1,7 +1,7 @@
 
 use std::cmp;
 
-use crate::game_form::{Game, GameResult};
+use crate::games::game_form::{Game, GameResult};
 use super::agent::Agent; 
 
 pub fn get_agent( player : u32, depth : u32 ) -> impl Agent {

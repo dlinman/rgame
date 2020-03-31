@@ -1,5 +1,5 @@
 
-use crate::game_form::{Game, GameResult};
+use crate::games::game_form::{Game, GameResult};
 
 pub fn get_game() -> impl Game {
     TicTacToeGame {}
@@ -199,7 +199,7 @@ impl Game for TicTacToeGame {
 
     fn game_status(&self, state : &Self::State) -> GameResult {
         use Square::*;
-        use crate::game_form::GameResult::*;
+        use crate::games::game_form::GameResult::*;
         fn won(line : &[Square]) -> Option<GameResult> {
             match line {
                 [X, X, X] => Some( Winner { player: 0, scores: vec![] } ),
