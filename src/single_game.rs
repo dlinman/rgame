@@ -1,13 +1,21 @@
 
-
 use crate::agents::agent::{Agent};
 use crate::games::game_form::{Game, GameResult};
+
+use std::io::{self, BufRead};
 
 pub fn play<G : Game, P1 : Agent, P2 : Agent>( game : &G, player_1 : &mut P1, player_2 : &mut P2 ) {
 
         let mut s = game.initial_state();
+        let mut rest = 0;
 
         while matches!(game.game_status(&s), GameResult::NotFinished) {
+            if rest % 10 == 0 {
+                let mut buffer = String::new();
+                std::io::stdin().lock().read_line(&mut buffer).unwrap();
+            }
+            rest = rest + 1;
+
             let turn = match game.player_turn(&s) {
                 0 => player_1.decide_turn(game, &s),
                 1 => player_2.decide_turn(game, &s),

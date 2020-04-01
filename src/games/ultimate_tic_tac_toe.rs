@@ -207,16 +207,28 @@ impl Game for Ultimate {
                 Square::Empty => ' ',
             }
         }
-        fn mini(b : &Vec<Vec<Square>>) -> [String; 3] {
-            let mut ret = ["".to_string(), "".to_string(), "".to_string()];
-            for r in 0..3 {
-                ret[r] = format!(" {} | {} | {} ", sq(b[r][0]), sq(b[r][1]), sq(b[r][2]));
-            }
+        fn mini(b : &Vec<Vec<Square>>) -> [String; 5] {
+            let mut ret = ["".to_string(), "".to_string(), "".to_string(), "".to_string(), "".to_string()];
+            ret[0] = format!(" {} | {} | {} ", sq(b[0][0]), sq(b[0][1]), sq(b[0][2]));
+            ret[1] = format!("-----------");
+            ret[2] = format!(" {} | {} | {} ", sq(b[1][0]), sq(b[1][1]), sq(b[1][2]));
+            ret[3] = format!("-----------");
+            ret[4] = format!(" {} | {} | {} ", sq(b[2][0]), sq(b[2][1]), sq(b[2][2]));
             ret
         }
-        fn display(b : &MiniBoard) -> [String; 3] {
-            let big_x = ["\\ /".to_string(), " . ".to_string(), "/ \\".to_string()];
-            let big_o = ["___".to_string(), "| |".to_string(), "---".to_string()];
+        fn display(b : &MiniBoard) -> [String; 5] {
+            let big_x = [ "           ".to_string()
+                        , "    \\ /    ".to_string()
+                        , "     .     ".to_string()
+                        , "    / \\    ".to_string()
+                        , "           ".to_string()
+                        ];
+            let big_o = [ "   ______  ".to_string()
+                        , "   |    |  ".to_string()
+                        , "   |    |  ".to_string()
+                        , "   ------  ".to_string()
+                        , "           ".to_string()
+                        ];
             match b {
                 MiniBoard::X => big_x,
                 MiniBoard::O => big_o,
@@ -232,9 +244,14 @@ impl Game for Ultimate {
             let m0 = display(&state.board[r][0]);
             let m1 = display(&state.board[r][1]);
             let m2 = display(&state.board[r][2]);
-            dis.push(format!("{}||{}||{}", m0[0], m1[0], m2[0]));
-            dis.push(format!("{}||{}||{}", m0[1], m1[1], m2[1]));
-            dis.push(format!("{}||{}||{}", m0[2], m1[2], m2[2]));
+            dis.push(format!("{}||{}||{}\n", m0[0], m1[0], m2[0]));
+            dis.push(format!("{}||{}||{}\n", m0[1], m1[1], m2[1]));
+            dis.push(format!("{}||{}||{}\n", m0[2], m1[2], m2[2]));
+            dis.push(format!("{}||{}||{}\n", m0[3], m1[3], m2[3]));
+            dis.push(format!("{}||{}||{}\n", m0[4], m1[4], m2[4]));
+            if r != 2 {
+                dis.push(format!("=====================================\n"));
+            }
         }
 
         dis.push("\n".to_string());
