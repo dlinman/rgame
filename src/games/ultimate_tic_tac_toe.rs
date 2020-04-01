@@ -154,7 +154,7 @@ impl Game for Ultimate {
         match check_mini_status(mini_board) {
             GameResult::Winner {player, scores: _} if player == 0 => new_state.board[r][c] = MiniBoard::X,
             GameResult::Winner {player, scores: _} => new_state.board[r][c] = MiniBoard::O,
-            GameResult::Draw {scores: _} => new_state.board[r][c] = MiniBoard::Draw(vec![]), // TODO 
+            GameResult::Draw {scores: _} => new_state.board[r][c] = MiniBoard::Draw(mini_board.clone()),
             GameResult::NotFinished => (),
         }
 

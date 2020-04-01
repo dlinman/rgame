@@ -11,6 +11,7 @@ pub fn play<G : Game, P1 : Agent, P2 : Agent>( game : &G, player_1 : &mut P1, pl
 
         while matches!(game.game_status(&s), GameResult::NotFinished) {
             if rest % 10 == 0 {
+                println!("\nPress enter key to resume");
                 let mut buffer = String::new();
                 std::io::stdin().lock().read_line(&mut buffer).unwrap();
             }
