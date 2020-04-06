@@ -1,7 +1,7 @@
 
 use std::cmp;
 
-use crate::games::game_form::{Game, GameResult};
+use crate::games::game_form::{Game, GameResult, HeuristicDescription};
 use super::agent::Agent; 
 
 pub fn get_agent( player : u32, depth : u32 ) -> impl Agent {
@@ -15,22 +15,23 @@ struct SelfMinimaxAgent {
 
 impl Agent for SelfMinimaxAgent {
     fn decide_turn<G : Game>(&mut self, game : &G, state : &G::State) -> G::TurnAction {
+        let (_, heuristic) = game.heuristics().into_iter().find(|h| matches!(h, (HeuristicDescription::Default, _))).unwrap();
         // TODO extend to handle more than 2 player games
-        fn minimax<G : Game>( game : &G, state : &G::State, player : u32, depth : u32, max : bool ) -> i32 {
+        fn minimax<G : Game>( game : &G, state : &G::State, heuristic : &G::Heuristic, player : u32, depth : u32, max : bool ) -> i32 {
             if depth == 0 || !matches!(game.game_status(state), GameResult::NotFinished) {
-                return game.state_score(state, player);
+                return game.state_score(state, heuristic, player);
             }
             if max {
                 let mut value = std::i32::MIN;
                 for new_state in game.legal_turns(&state).map(|turn| game.take_turn(&state, &turn)) {
-                    value = cmp::max(value, minimax(game, &new_state, player, depth - 1, false));
+                    value = cmp::max(value, minimax(game, &new_state, heuristic, player, depth - 1, false));
                 }
                 value
             } 
             else {
                 let mut value = std::i32::MAX;
                 for new_state in game.legal_turns(&state).map(|turn| game.take_turn(&state, &turn)) {
-                    value = cmp::min(value, minimax(game, &new_state, player, depth - 1, true));
+                    value = cmp::min(value, minimax(game, &new_state, heuristic, player, depth - 1, true));
                 }
                 value
             }
@@ -38,7 +39,7 @@ impl Agent for SelfMinimaxAgent {
         let highest_action = game.legal_turns(&state)
                           .map(|turn| { 
                                 let new_state = game.take_turn(&state, &turn);
-                                let score = minimax(game, &new_state, self.player, self.depth, false);
+                                let score = minimax(game, &new_state, &heuristic, self.player, self.depth, false);
                                 (score, Some(turn))
                           })
                           .fold((std::i32::MIN, None), |highest, n| {

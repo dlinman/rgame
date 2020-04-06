@@ -1,5 +1,5 @@
 
-use crate::games::game_form::{Game, GameResult};
+use crate::games::game_form::{Game, GameResult, HeuristicDescription};
 
 pub fn get_game() -> impl Game {
     Ultimate {}
@@ -50,6 +50,10 @@ struct Turns {
     col : usize,
     mini_row : usize,
     mini_col : usize,
+}
+
+enum UHeuristic {
+    Default,
 }
 
 impl Iterator for Turns {
@@ -111,6 +115,7 @@ impl Game for Ultimate {
     type State = UState;
     type TurnAction = UTurn;
     type T = Turns;
+    type Heuristic = UHeuristic;
 
     fn initial_state(&self) -> UState {
         fn mini_board() -> MiniBoard {
@@ -172,7 +177,13 @@ impl Game for Ultimate {
         Turns { s0: state.clone(), row: 0, col: 0, mini_row: 0, mini_col: 0 }
     }
 
-    fn state_score(&self, state : &UState, player : u32) -> i32 {
+    fn heuristics(&self) -> Vec<(HeuristicDescription, UHeuristic)> {
+        vec![(HeuristicDescription::Default, UHeuristic::Default)
+
+            ]
+    } 
+
+    fn state_score(&self, state : &UState, heuristic : &UHeuristic, player : u32) -> i32 {
         // lose penalty 
         // win bonus 
         // target board = any bonus when its your turn

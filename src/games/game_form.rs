@@ -5,11 +5,17 @@ pub enum GameResult {
     Draw { scores : Vec<(u32, i32)> },
 }
 
+pub enum HeuristicDescription {
+    Misc(String),
+    Default,
+}
+
 pub trait Game {
 
     type State : Clone;
     type TurnAction;
     type T : Iterator<Item = Self::TurnAction>;
+    type Heuristic;
 
     fn initial_state(&self) -> Self::State;
 
@@ -17,7 +23,9 @@ pub trait Game {
 
     fn legal_turns(&self, state : &Self::State) -> Self::T;
 
-    fn state_score(&self, state : &Self::State, player : u32) -> i32;
+    fn heuristics(&self) -> Vec<(HeuristicDescription, Self::Heuristic)>;
+
+    fn state_score(&self, state : &Self::State, heuristic : &Self::Heuristic, player : u32) -> i32;
 
     fn players_allowed(&self) -> u32;
 
