@@ -184,12 +184,95 @@ impl Game for Ultimate {
     } 
 
     fn state_score(&self, state : &UState, heuristic : &UHeuristic, player : u32) -> i32 {
+        fn mini_board_score( board : &Vec<Vec<Square>>, player : u32 ) -> i32 {
+            let (me, enemy) = if player == 0 {
+                (Square::X, Square::O)
+            }
+            else {
+                (Square::O, Square::X)
+            };
+            let s2i = |s : Square| -> i32 {
+                if s == me { 1 }
+                else if s == enemy { -1 }
+                else { 0 }
+            };
+
+            let r0 = vec![ board[0][0], board[0][1], board[0][2] ];
+            let r1 = vec![ board[1][0], board[1][1], board[1][2] ];
+            let r2 = vec![ board[2][0], board[2][1], board[2][2] ];
+
+            let c0 = vec![ board[0][0], board[1][0], board[2][0] ];
+            let c1 = vec![ board[0][1], board[1][1], board[2][1] ];
+            let c2 = vec![ board[0][2], board[1][2], board[2][2] ];
+
+            let d0 = vec![ board[0][0], board[1][1], board[2][2] ];
+            let d1 = vec![ board[2][0], board[1][1], board[0][2] ];
+
+            vec![ r0, r1, r2, c0, c1, c2, d0, d1 ]
+                .into_iter()
+                .map(|v| v.into_iter())
+                .flatten()
+                .map(s2i)
+                .sum()
+        }
+        fn board_score( board : &Vec<Vec<MiniBoard>>, player : u32 ) -> i32 {
+            let s2i : fn(&MiniBoard) -> i32 = if player == 0 {
+                |s : &MiniBoard| -> i32 {
+                    if matches!(s, MiniBoard::X) { 1 }
+                    else if matches!(s, MiniBoard::O) { -1 }
+                    else { 0 }
+                }
+            }
+            else {
+                |s : &MiniBoard| -> i32 {
+                    if matches!(s, MiniBoard::O) { 1 }
+                    else if matches!(s, MiniBoard::X) { -1 }
+                    else { 0 }
+                }
+            };
+
+            let r0 = vec![ &board[0][0], &board[0][1], &board[0][2] ];
+            let r1 = vec![ &board[1][0], &board[1][1], &board[1][2] ];
+            let r2 = vec![ &board[2][0], &board[2][1], &board[2][2] ];
+
+            let c0 = vec![ &board[0][0], &board[1][0], &board[2][0] ];
+            let c1 = vec![ &board[0][1], &board[1][1], &board[2][1] ];
+            let c2 = vec![ &board[0][2], &board[1][2], &board[2][2] ];
+
+            let d0 = vec![ &board[0][0], &board[1][1], &board[2][2] ];
+            let d1 = vec![ &board[2][0], &board[1][1], &board[0][2] ];
+
+            vec![ r0, r1, r2, c0, c1, c2, d0, d1 ]
+                .into_iter()
+                .map(|v| v.into_iter())
+                .flatten()
+                .map(s2i)
+                .sum()
+        }
+        fn default(state : &UState, player : u32) -> i32 {
+            fn ms(b : &MiniBoard, player : u32) -> i32 {
+                match b {
+                    MiniBoard::Board(board) => mini_board_score(board, player),
+                    _ => 0,
+                }
+            }
+            let target_score = match state.target_board {
+                BoardAllowed::Any if state.player_turn == player => 8,
+                BoardAllowed::Any => -8,
+                BoardAllowed::At{ row, col } => ms(&state.board[row][col], player) / 2, 
+            };
+
+            board_score(&state.board, player) + target_score
+        }
+
+        match heuristic {
+            UHeuristic::Default => default(state, player),
+        }
         // lose penalty 
         // win bonus 
         // target board = any bonus when its your turn
         // target board = any penalty when its your opponents turn
         // target board = at of board that you want to win bonus
-        0
     }
 
     fn players_allowed(&self) -> u32 { 2 }
