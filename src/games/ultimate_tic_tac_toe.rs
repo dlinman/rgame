@@ -173,48 +173,6 @@ impl Game for Ultimate {
     }
 
     fn state_score(&self, state : &UState, player : u32) -> i32 {
-        fn status( line : &[&MiniBoard], s : &MiniBoard ) -> u8 {
-            match line {
-                [a, b, c] if *a == s && *b == s && *c == s => 1,
-                _ => 0, 
-            }
-        }
-
-        let r0 = vec![ &state.board[0][0], &state.board[0][1], &state.board[0][2] ] ;
-        let r1 = vec![ &state.board[1][0], &state.board[1][1], &state.board[1][2] ] ;
-        let r2 = vec![ &state.board[2][0], &state.board[2][1], &state.board[2][2] ] ;
-
-        let c0 = vec![ &state.board[0][0], &state.board[1][0], &state.board[2][0] ] ;
-        let c1 = vec![ &state.board[0][1], &state.board[1][1], &state.board[2][1] ] ;
-        let c2 = vec![ &state.board[0][2], &state.board[1][2], &state.board[2][2] ] ;
-
-        let d0 = vec![ &state.board[0][0], &state.board[1][1], &state.board[2][2] ] ;
-        let d1 = vec![ &state.board[2][0], &state.board[1][1], &state.board[0][2] ] ;
-
-        let (me, enemy) = if player == 0 {
-            (MiniBoard::X, MiniBoard::O)
-        }
-        else {
-            (MiniBoard::O, MiniBoard::X)
-        };
-
-        let win_count = score(&r0, &me) 
-                      + score(&r1, &me)
-                      + score(&r2, &me)
-                      + score(&c0, &me)
-                      + score(&c1, &me)
-                      + score(&c2, &me)
-                      + score(&d0, &me)
-                      + score(&d1, &me);
-
-        let lose_count = status(&r0, &enemy) 
-                       + status(&r1, &enemy)
-                       + status(&r2, &enemy)
-                       + status(&c0, &enemy)
-                       + status(&c1, &enemy)
-                       + status(&c2, &enemy)
-                       + status(&d0, &enemy)
-                       + status(&d1, &enemy);
         // lose penalty 
         // win bonus 
         // target board = any bonus when its your turn
