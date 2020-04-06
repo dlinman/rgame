@@ -5,6 +5,7 @@ pub enum GameResult {
     Draw { scores : Vec<(u32, i32)> },
 }
 
+#[derive(PartialEq)]
 pub enum HeuristicDescription {
     Misc(String),
     Default,

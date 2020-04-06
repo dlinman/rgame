@@ -2,7 +2,7 @@
 use crate::agents::agent::{Agent};
 use crate::games::game_form::{Game, GameResult};
 
-use std::io::{self, BufRead};
+use std::io::{BufRead};
 
 pub fn play<G : Game, P1 : Agent, P2 : Agent>( game : &G, player_1 : &mut P1, player_2 : &mut P2 ) {
 

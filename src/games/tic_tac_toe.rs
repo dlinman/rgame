@@ -98,7 +98,7 @@ impl Game for TicTacToeGame {
         vec![(HeuristicDescription::Default, TTTHeuristic{})]
     }
 
-    fn state_score(&self, state : &TicTacToeState, heuristic : &TTTHeuristic, player : u32) -> i32 {
+    fn state_score(&self, state : &TicTacToeState, _heuristic : &TTTHeuristic, player : u32) -> i32 {
         fn score(line : Vec<Square>, s : Square) -> i32 {
             let mut home_count = 0;
             let mut empty_count = 0;
