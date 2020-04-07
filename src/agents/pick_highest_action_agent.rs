@@ -20,7 +20,10 @@ impl Agent for PickHighestActionAgent {
                                 let score = game.state_score(&new_state, &heuristic, self.player);
                                 (score, Some(turn))
                           })
-                          .fold((-1, None), |highest, n| {
+                          .fold((std::i32::MIN, None), |highest, n| {
+                              if matches!(highest, (_, None)) {
+                                  return n;
+                              }
                               let (cur_v, cur_t) = highest;
                               let (n_v, n_t) = n;
                               if cur_v > n_v {
