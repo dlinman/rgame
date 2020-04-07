@@ -1,5 +1,5 @@
 
-use crate::games::game_form::{Game, GameResult};
+use crate::games::game_form::{Game, GameResult, HeuristicDescription};
 
 pub fn get_game() -> impl Game {
     TicTacToeGame {}
@@ -32,6 +32,8 @@ struct Turns {
     row : usize,
     col : usize,
 }
+
+struct TTTHeuristic {}
 
 impl Iterator for Turns {
     type Item = TicTacToeTurn;
@@ -68,6 +70,7 @@ impl Game for TicTacToeGame {
     type State = TicTacToeState;
     type TurnAction = TicTacToeTurn;
     type T = Turns; 
+    type Heuristic = TTTHeuristic;
 
     fn initial_state(&self) -> TicTacToeState {
         let mut board = vec![];
@@ -91,7 +94,11 @@ impl Game for TicTacToeGame {
         Turns { s0: state.clone(), row: 0, col: 0 }
     }
 
-    fn state_score(&self, state : &TicTacToeState, player : u32) -> i32 {
+    fn heuristics(&self) -> Vec<(HeuristicDescription, TTTHeuristic)> {
+        vec![(HeuristicDescription::Default, TTTHeuristic{})]
+    }
+
+    fn state_score(&self, state : &TicTacToeState, _heuristic : &TTTHeuristic, player : u32) -> i32 {
         fn score(line : Vec<Square>, s : Square) -> i32 {
             let mut home_count = 0;
             let mut empty_count = 0;

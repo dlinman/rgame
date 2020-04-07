@@ -1,5 +1,5 @@
 
-use crate::games::game_form::{Game, GameResult};
+use crate::games::game_form::{Game, GameResult, HeuristicDescription};
 
 pub fn get_game() -> impl Game {
     Ultimate {}
@@ -52,6 +52,10 @@ struct Turns {
     mini_col : usize,
 }
 
+enum UHeuristic {
+    Default,
+}
+
 impl Iterator for Turns {
     type Item = UTurn;
 
@@ -72,17 +76,22 @@ impl Iterator for Turns {
             if self.col == 3 {
                 return None;
             }
-            
-            if matches!(self.s0.board[self.row][self.col], MiniBoard::Board(_)) {
-                match &self.s0.board[self.row][self.col] {
-                    MiniBoard::Board(b) => {
-                        if matches!(b[self.mini_row][self.mini_col], Square::Empty) {
-                            break;
-                        }
-                    }
-                    _ => panic!("Mini board should be board"),
-                }
+            match self.s0.target_board {
+                BoardAllowed::At { row, col } if row != self.row || col != self.col => {
+                    self.mini_row = self.mini_row + 1;
+                    continue;
+                },
+                _ => (),
             }
+            
+            match &self.s0.board[self.row][self.col] {
+                MiniBoard::Board(b) => match b[self.mini_row][self.mini_col] {
+                    Square::Empty => break,
+                    _ => (),
+                },
+                _ => (),
+            }
+
             self.mini_row = self.mini_row + 1;
         }
 
@@ -100,7 +109,7 @@ impl Iterator for Turns {
                        , square
                        , player_turn: self.s0.player_turn
                        };
-        self.row = self.row + 1;
+        self.mini_row = self.mini_row + 1;
         Some(ret)
     }
 }
@@ -111,6 +120,7 @@ impl Game for Ultimate {
     type State = UState;
     type TurnAction = UTurn;
     type T = Turns;
+    type Heuristic = UHeuristic;
 
     fn initial_state(&self) -> UState {
         fn mini_board() -> MiniBoard {
@@ -150,10 +160,13 @@ impl Game for Ultimate {
             MiniBoard::Board(b) => b,
             _ => panic!("Attempting to make move on completed board")
         };
+        if !matches!(mini_board[turn_action.mini_board_row][turn_action.mini_board_col], Square::Empty) {
+            panic!("reuse occupied square bug");
+        }
         mini_board[turn_action.mini_board_row][turn_action.mini_board_col] = turn_action.square;
         match check_mini_status(mini_board) {
             GameResult::Winner {player, scores: _} if player == 0 => new_state.board[r][c] = MiniBoard::X,
-            GameResult::Winner {player, scores: _} => new_state.board[r][c] = MiniBoard::O,
+            GameResult::Winner {player: _, scores: _} => new_state.board[r][c] = MiniBoard::O,
             GameResult::Draw {scores: _} => new_state.board[r][c] = MiniBoard::Draw(mini_board.clone()),
             GameResult::NotFinished => (),
         }
@@ -172,13 +185,102 @@ impl Game for Ultimate {
         Turns { s0: state.clone(), row: 0, col: 0, mini_row: 0, mini_col: 0 }
     }
 
-    fn state_score(&self, state : &UState, player : u32) -> i32 {
+    fn heuristics(&self) -> Vec<(HeuristicDescription, UHeuristic)> {
+        vec![(HeuristicDescription::Default, UHeuristic::Default)
+
+            ]
+    } 
+
+    fn state_score(&self, state : &UState, heuristic : &UHeuristic, player : u32) -> i32 {
+        fn mini_board_score( board : &Vec<Vec<Square>>, player : u32 ) -> i32 {
+            let (me, enemy) = if player == 0 {
+                (Square::X, Square::O)
+            }
+            else {
+                (Square::O, Square::X)
+            };
+            let s2i = |s : Square| -> i32 {
+                if s == me { 1 }
+                else if s == enemy { -1 }
+                else { 0 }
+            };
+
+            let r0 = vec![ board[0][0], board[0][1], board[0][2] ];
+            let r1 = vec![ board[1][0], board[1][1], board[1][2] ];
+            let r2 = vec![ board[2][0], board[2][1], board[2][2] ];
+
+            let c0 = vec![ board[0][0], board[1][0], board[2][0] ];
+            let c1 = vec![ board[0][1], board[1][1], board[2][1] ];
+            let c2 = vec![ board[0][2], board[1][2], board[2][2] ];
+
+            let d0 = vec![ board[0][0], board[1][1], board[2][2] ];
+            let d1 = vec![ board[2][0], board[1][1], board[0][2] ];
+
+            vec![ r0, r1, r2, c0, c1, c2, d0, d1 ]
+                .into_iter()
+                .map(|v| v.into_iter())
+                .flatten()
+                .map(s2i)
+                .sum()
+        }
+        fn board_score( board : &Vec<Vec<MiniBoard>>, player : u32 ) -> i32 {
+            let s2i : fn(&MiniBoard) -> i32 = if player == 0 {
+                |s : &MiniBoard| -> i32 {
+                    if matches!(s, MiniBoard::X) { 1 }
+                    else if matches!(s, MiniBoard::O) { -1 }
+                    else { 0 }
+                }
+            }
+            else {
+                |s : &MiniBoard| -> i32 {
+                    if matches!(s, MiniBoard::O) { 1 }
+                    else if matches!(s, MiniBoard::X) { -1 }
+                    else { 0 }
+                }
+            };
+
+            let r0 = vec![ &board[0][0], &board[0][1], &board[0][2] ];
+            let r1 = vec![ &board[1][0], &board[1][1], &board[1][2] ];
+            let r2 = vec![ &board[2][0], &board[2][1], &board[2][2] ];
+
+            let c0 = vec![ &board[0][0], &board[1][0], &board[2][0] ];
+            let c1 = vec![ &board[0][1], &board[1][1], &board[2][1] ];
+            let c2 = vec![ &board[0][2], &board[1][2], &board[2][2] ];
+
+            let d0 = vec![ &board[0][0], &board[1][1], &board[2][2] ];
+            let d1 = vec![ &board[2][0], &board[1][1], &board[0][2] ];
+
+            vec![ r0, r1, r2, c0, c1, c2, d0, d1 ]
+                .into_iter()
+                .map(|v| v.into_iter())
+                .flatten()
+                .map(s2i)
+                .sum()
+        }
+        fn default(state : &UState, player : u32) -> i32 {
+            fn ms(b : &MiniBoard, player : u32) -> i32 {
+                match b {
+                    MiniBoard::Board(board) => mini_board_score(board, player),
+                    _ => 0,
+                }
+            }
+            let target_score = match state.target_board {
+                BoardAllowed::Any if state.player_turn == player => 8,
+                BoardAllowed::Any => -8,
+                BoardAllowed::At{ row, col } => ms(&state.board[row][col], player) / 2, 
+            };
+
+            board_score(&state.board, player) + target_score
+        }
+
+        match heuristic {
+            UHeuristic::Default => default(state, player),
+        }
         // lose penalty 
         // win bonus 
         // target board = any bonus when its your turn
         // target board = any penalty when its your opponents turn
         // target board = at of board that you want to win bonus
-        0
     }
 
     fn players_allowed(&self) -> u32 { 2 }
