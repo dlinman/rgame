@@ -77,16 +77,14 @@ impl Iterator for Turns {
                 return None;
             }
             
-            if matches!(self.s0.board[self.row][self.col], MiniBoard::Board(_)) {
-                match &self.s0.board[self.row][self.col] {
-                    MiniBoard::Board(b) => {
-                        if matches!(b[self.mini_row][self.mini_col], Square::Empty) {
-                            break;
-                        }
-                    }
-                    _ => panic!("Mini board should be board"),
-                }
+            match &self.s0.board[self.row][self.col] {
+                MiniBoard::Board(b) => match b[self.mini_row][self.mini_col] {
+                    Square::Empty => break,
+                    _ => (),
+                },
+                _ => (),
             }
+
             self.mini_row = self.mini_row + 1;
         }
 
@@ -104,7 +102,7 @@ impl Iterator for Turns {
                        , square
                        , player_turn: self.s0.player_turn
                        };
-        self.row = self.row + 1;
+        self.mini_row = self.mini_row + 1;
         Some(ret)
     }
 }
