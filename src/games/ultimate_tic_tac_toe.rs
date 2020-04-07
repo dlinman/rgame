@@ -76,6 +76,13 @@ impl Iterator for Turns {
             if self.col == 3 {
                 return None;
             }
+            match self.s0.target_board {
+                BoardAllowed::At { row, col } if row != self.row || col != self.col => {
+                    self.mini_row = self.mini_row + 1;
+                    continue;
+                },
+                _ => (),
+            }
             
             match &self.s0.board[self.row][self.col] {
                 MiniBoard::Board(b) => match b[self.mini_row][self.mini_col] {
